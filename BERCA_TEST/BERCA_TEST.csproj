@@ -15,4 +15,18 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Models\DTOs\" />
+    <None Remove="Services\" />
+    <None Remove="Repositories\" />
+    <None Remove="Repositories\IRepository\" />
+    <None Remove="Services\IService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\DTOs\" />
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="Repositories\IRepository\" />
+    <Folder Include="Services\IService\" />
+  </ItemGroup>
 </Project>
