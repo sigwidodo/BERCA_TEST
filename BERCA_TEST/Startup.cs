@@ -1,5 +1,9 @@
 using AutoMapper;
 using BERCA_TEST.DbContexts;
+using BERCA_TEST.Repositories;
+using BERCA_TEST.Repositories.IRepository;
+using BERCA_TEST.Services;
+using BERCA_TEST.Services.IService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,6 +37,10 @@ namespace BERCA_TEST
             );
 
             IMapper mapper = MappingConfig.RegistrationMaps().CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddTransient<ITransactionRepository, TransactionRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

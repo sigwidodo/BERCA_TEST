@@ -1,4 +1,6 @@
 ﻿using BERCA_TEST.Models;
+using BERCA_TEST.Models.DTOs;
+using BERCA_TEST.Services.IService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,11 +13,12 @@ namespace BERCA_TEST.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        
+        private readonly ITransactionService _transactionService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ITransactionService transactionService)
         {
-            _logger = logger;
+            _transactionService = transactionService;   
         }
 
         public IActionResult Index()
@@ -23,15 +26,14 @@ namespace BERCA_TEST.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        /* GET LIST CUSTOMER */
+        public async Task<JsonResult> GetListCustomer()
         {
-            return View();
-        }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            List<CustomerDTO> listCustomer = (List<CustomerDTO>)await _transactionService.GetAllCustomer();
+            var jsonResult = Json(listCustomer);
+            return jsonResult;
+
         }
     }
 }
