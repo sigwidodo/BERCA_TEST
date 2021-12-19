@@ -27,7 +27,6 @@ namespace BERCA_TEST.DbContexts
         {
             if (!optionsBuilder.IsConfigured)
             {
-
             }
         }
 
@@ -77,12 +76,12 @@ namespace BERCA_TEST.DbContexts
 
             modelBuilder.Entity<Currency>(entity =>
             {
-                entity.HasKey(e => e.Currency1)
-                    .HasName("PK__Currency__AFC4E285324E3CCA");
+                entity.HasNoKey();
 
                 entity.ToTable("Currency");
 
                 entity.Property(e => e.Currency1)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("Currency");
@@ -100,7 +99,9 @@ namespace BERCA_TEST.DbContexts
             {
                 entity.ToTable("Customer");
 
-                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+                entity.Property(e => e.CustomerId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("CustomerID");
 
                 entity.Property(e => e.CustomerName)
                     .HasMaxLength(255)
