@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Custom' " />
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
@@ -21,6 +22,7 @@
     <None Remove="Repositories\" />
     <None Remove="Repositories\IRepository\" />
     <None Remove="Services\IService\" />
+    <None Remove="Database\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\DTOs\" />
@@ -28,6 +30,7 @@
     <Folder Include="Repositories\" />
     <Folder Include="Repositories\IRepository\" />
     <Folder Include="Services\IService\" />
+    <Folder Include="Database\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\Assets\global\plugins\angularjs\angular-cookies.min.js" />

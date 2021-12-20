@@ -9,6 +9,7 @@ namespace BERCA_TEST.Models.DTOs
 
         public string InvoiceNo { get; set; }
         public int? CustomerId { get; set; }
+        public string CustomerName { get; set; }
         public string InvoiceDate { get; set; }
         public string DueDate { get; set; }
         public string Currency { get; set; }

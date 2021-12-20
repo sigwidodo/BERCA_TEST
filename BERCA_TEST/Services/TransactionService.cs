@@ -17,9 +17,29 @@ namespace BERCA_TEST.Services
             _transactionRepository = transactionRepository;
         }
 
-        public Task<IEnumerable<CustomerDTO>> GetAllCustomer()
+        public async Task<IEnumerable<string>> GetAllCurrency()
         {
-            return _transactionRepository.GetAllCustomer();
+            return await _transactionRepository.GetAllCurrency();
+        }
+
+        public async Task<IEnumerable<CustomerDTO>> GetAllCustomer()
+        {
+            return await _transactionRepository.GetAllCustomer();
+        }
+
+        public async Task<IEnumerable<InvoiceDTO>> GetAllInvoice(string customerName, string invoiceNo)
+        {
+            return await _transactionRepository.GetAllInvoice(customerName, invoiceNo);
+        }
+
+        public async Task<string> GetCurrencyRate(string id)
+        {
+            return await _transactionRepository.GetCurrencyRate(id);
+        }
+
+        public async Task<InvoiceDTO> GetInvoiceInfo(string id)
+        {
+            return await _transactionRepository.GetInvoiceInfo(id);
         }
     }
 }

@@ -36,7 +36,7 @@
                             <table class="table table-striped table-hover table-bordered" id="table_invoice">
                                 <thead>
                                     <tr class="bg-red-thunderbird bg-font-red-thunderbird">
-                                        <th style="display:none;"> id </th>
+                                        <th> Action </th>
                                         <th> Invoice No </th>
                                         <th> Customer Name </th>
                                         <th> Invoice Date </th>
@@ -81,7 +81,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Invoice No</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtEthnic" placeholder="Nama Suku" maxlength="100" name="ethnic" class="form-control" />
+                            <input type="text" id="txtInvoiceNo" placeholder="Invoice No" maxlength="100" name="ethnic" class="form-control" disabled="disabled" />
                         </div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Invoice Date</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtEthnic" placeholder="Nama Suku" maxlength="100" name="ethnic" class="form-control" />
+                            <input type="text" id="txtInvoiceDate" placeholder="Invoice Date" maxlength="100" name="ethnic" class="form-control" disabled="disabled" />
                         </div>
                     </div>
                 </div>
@@ -97,7 +97,9 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Currency</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtEthnic" placeholder="Nama Suku" maxlength="100" name="ethnic" class="form-control" />
+                            <select id="txtCurrency" name="customer-name" class="select2me form-control show-tick">
+                                <option value="">Customer ID - Customer Name</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -105,7 +107,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Rate</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtEthnic" placeholder="Nama Suku" maxlength="100" name="ethnic" class="form-control" />
+                            <input type="text" id="txtRate" placeholder="Rate" maxlength="100" name="ethnic" class="form-control" disabled="disabled" />
                         </div>
                     </div>
                 </div>
@@ -113,7 +115,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Invoice Ammount</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtEthnic" placeholder="Nama Suku" maxlength="100" name="ethnic" class="form-control" />
+                            <input type="text" id="txtInvoiceAmmount" placeholder="Invoice Ammount" maxlength="100" name="ethnic" class="form-control" />
                         </div>
                     </div>
                 </div>
@@ -133,7 +135,7 @@
     $(document).ready(function () {
 
         /* INIT TABLE INVOICE */
-        function initData() {
+        function initData(customerName, invoiceNo) {
 
             var tableDocument =$('#table_invoice').DataTable({
                 "bJQueryUI": true,
@@ -145,18 +147,26 @@
                 "paging": true,
                 "autoWidth": false,
                 "ordering": false,
-                "sAjaxSource": '/home/getlistcustomer',
+                "sAjaxSource": '/home/getlistinvoice?customerName=' + customerName + '&invoiceNo=' + invoiceNo,
                 "sAjaxDataProp": "",
                 "aoColumns": [
-                    { "mDataProp": "customerId", "visible": false, "searchable": true, "targets": [0] },
+                    {
+                        "mData": function (data, row) {
+                            return '<a class="btn btn-default edit-status-ethnic" href="javascript:;"> View Invoice</a>' +
+                                '<a class="btn btn-default edit-status-ethnic" href="javascript:;"> Input Collection</a>' +
+                                '<a class="btn btn-default edit-status-ethnic" href="javascript:;"> Cancel Invoice</a>';
+                            
+
+                        }
+                    },
+                    { "mDataProp": "invoiceNo"},
                     { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
-                    { "mDataProp": "customerName" },
+                    { "mDataProp": "invoiceDate" },
+                    { "mDataProp": "dueDate" },
+                    { "mDataProp": "currency" },
+                    { "mDataProp": "invoiceAmmountIdr" },
+                    { "mDataProp": "openAmmountIdr" },
+                    { "mDataProp": "remark" }
                 ]
             });
 
@@ -194,7 +204,7 @@
 
 
 
-        initData();
+        initData("", "");
 
 
         /* BTN MODAL INVOICE */
@@ -202,9 +212,8 @@
 
             $('#form_invoice')[0].reset();
             GetListCustomer();
-            $('#modal-invoice').modal('show');
-
-
+            GetListCurrency();
+            
         });
 
         // GET CUSTOMER NAME
@@ -216,6 +225,9 @@
                     $('#txtCustomerName').html('<option value="">Customer ID - Customer Name </option>');
                     $.each(result, function (i) {
                         $('#txtCustomerName').append('<option value=' + this.customerId + '>' + this.customerId + ' - ' + this.customerName + '</option>');
+                        if (i == (result.length - 1)) {
+                            $('#modal-invoice').modal('show');
+                        }
                     });
                 },
                 error: function (e) {
@@ -223,6 +235,70 @@
                 }
             });
         }
+
+        // GET CUSTOMER NAME
+        function GetListCurrency() {
+            $.ajax({
+                type: "GET",
+                url: "/home/getlistcurrency",
+                success: function (result) {
+                    $('#txtCurrency').html('<option value="">Currency </option>');
+                    $.each(result, function (i) {
+                        $('#txtCurrency').append('<option value=' + this + '>' + this + '</option>');
+                        if (i == (result.length - 1)) {
+                            $('#txtCurrency').append('<option value=IDR> IDR </option>');
+                        }
+                    });
+                },
+                error: function (e) {
+                    swal("Error!", "", "error");
+                }
+            });
+        }
+
+        // SET INVOICE INFO
+        function SetInvoiceInfo(id) {
+            $.ajax({
+                type: "GET",
+                url: "/home/setinvoiceinfo?id=" + id,
+                success: function (result) {
+                    $('#txtInvoiceNo').val(result.invoiceNo);
+                    $('#txtInvoiceDate').val(result.dueDate);
+                },
+                error: function (e) {
+                    swal("Error!", "", "error");
+                }
+            });
+        }
+
+        // GET CURRENCY RATE
+        function GetCurrencyRate(id) {
+            $.ajax({
+                type: "GET",
+                url: "/home/getcurrencyrate?id=" + id,
+                success: function (result) {
+                    $('#txtRate').val(result);
+                },
+                error: function (e) {
+                    swal("Error!", "", "error");
+                }
+            });
+        }
+
+        /* SELECT CUSTOMER TO GET INVOICE INFO */
+        $(document).on('change', '#txtCustomerName', function (e) {
+            SetInvoiceInfo($(this).val());
+        });
+
+        /* SELECT CURRENCY */
+        $(document).on('change', '#txtCurrency', function (e) {
+            if ($(this).val() == 'IDR') {
+                $('#txtRate').val(1);
+            }
+            else {
+                GetCurrencyRate($(this).val());
+            }
+        });
 
 });
 </script>
