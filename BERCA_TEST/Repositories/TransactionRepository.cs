@@ -39,7 +39,7 @@ namespace BERCA_TEST.Repositories
 
         public async Task<IEnumerable<InvoiceDTO>> GetAllInvoice(string customerName, string invoiceNo)
         {
-            List<Invoice> listInvoice = new List<Invoice>();
+            List<InvoiceDTO> listInvoice = new List<InvoiceDTO>();
 
             using (var cmd = _db.Database.GetDbConnection().CreateCommand())
             {
@@ -57,7 +57,7 @@ namespace BERCA_TEST.Repositories
 
                         foreach (DataRow dr in dt.Rows)
                         {
-                            Invoice invoice = new Invoice();
+                            InvoiceDTO invoice = new InvoiceDTO();
                             invoice.CustomerId = int.Parse(dr["customer_id"].ToString());
                             invoice.Currency = dr["currency"].ToString();
                             invoice.CustomerName = dr["customer_name"].ToString();
@@ -103,12 +103,13 @@ namespace BERCA_TEST.Repositories
                             invoice = new Invoice();
                             invoice.DueDate = dr["due_date"].ToString();
                             invoice.InvoiceNo = dr["invoice_no"].ToString();
-
+                            invoice.InvoiceDate = dr["invoice_date"].ToString();
                         }
                     }
                 }
 
                 return _mapper.Map<InvoiceDTO>(invoice);
+
             }
         }
 
@@ -138,6 +139,23 @@ namespace BERCA_TEST.Repositories
 
                 return rate;
             }
+        }
+
+        public async Task<bool> SubmitInvoice(InvoiceDTO invoiceDTO)
+        {
+            Invoice invoice = _mapper.Map<InvoiceDTO, Invoice>(invoiceDTO);
+            try
+            {
+
+                _db.Invoices.Add(invoice);
+                await _db.SaveChangesAsync();
+                
+            }
+            catch (SqlException e) {
+                return false;
+            }
+
+            return true;
         }
     }
 }

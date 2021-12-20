@@ -12,5 +12,6 @@ namespace BERCA_TEST.Repositories.IRepository
         Task<IEnumerable<InvoiceDTO>> GetAllInvoice(string customerName, string invoiceNo);
         Task<InvoiceDTO> GetInvoiceInfo(string id);
         Task<string> GetCurrencyRate(string id);
+        Task<bool> SubmitInvoice(InvoiceDTO invoiceDTO);
     }
 }

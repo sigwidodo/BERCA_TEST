@@ -64,6 +64,7 @@
         <h4 class="modal-title">DATA INVOICE</h4>
     </div>
     <form action="#" id="form_invoice" class="form-horizontal">
+        <input type="hidden" id="txtDueDate" />
         <div class="form-body">
             <div class="modal-body">
                 <input type="hidden" id="txtEthnicId" class="form-control" />
@@ -115,14 +116,22 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Invoice Ammount</label>
                         <div class="col-md-9" style="padding-right: 40px; !important;">
-                            <input type="text" id="txtInvoiceAmmount" placeholder="Invoice Ammount" maxlength="100" name="ethnic" class="form-control" />
+                            <input type="text" id="txtInvoiceAmmount" placeholder="Invoice Ammount" maxlength="100" name="ethnic" class="form-control number-only" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: -5px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Remark</label>
+                        <div class="col-md-9" style="padding-right: 40px; !important;">
+                            <input type="text" id="txtRemark" placeholder="Remark" maxlength="255" name="ethnic" class="form-control" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn cancel btn-outline dark">Batal</button>
-                <button type="button" class="btn red-thunderbird" id="btn-add-ethnic">Submit</button>
+                <button type="button" class="btn red-thunderbird" id="btn-submit-invoice">Submit</button>
             </div>
         </div>
     </form>
@@ -202,10 +211,7 @@
 
         };
 
-
-
         initData("", "");
-
 
         /* BTN MODAL INVOICE */
         $(document).on('click', '#btn-add-invoice', function (e) {
@@ -263,7 +269,8 @@
                 url: "/home/setinvoiceinfo?id=" + id,
                 success: function (result) {
                     $('#txtInvoiceNo').val(result.invoiceNo);
-                    $('#txtInvoiceDate').val(result.dueDate);
+                    $('#txtInvoiceDate').val(result.invoiceDate);
+                    $('#txtDueDate').val(result.dueDate);
                 },
                 error: function (e) {
                     swal("Error!", "", "error");
@@ -277,7 +284,7 @@
                 type: "GET",
                 url: "/home/getcurrencyrate?id=" + id,
                 success: function (result) {
-                    $('#txtRate').val(result);
+                    $('#txtRate').val(formatCurrency(result));
                 },
                 error: function (e) {
                     swal("Error!", "", "error");
@@ -300,5 +307,122 @@
             }
         });
 
-});
+        /* SUBMIT INVOICE */
+        function SubmitInvoice() {
+            var invoiceAmmountIdr;
+            var invoiceAmmountForeign;
+           
+            var invoiceDto = new FormData();
+            invoiceDto.append('invoiceNo', $('#txtInvoiceNo').val());
+            invoiceDto.append('customerId', $('#txtCustomerName').val());
+            invoiceDto.append('invoiceDate', $('#txtInvoiceDate').val());
+            invoiceDto.append('dueDate', $('#txtDueDate').val());
+            invoiceDto.append('currency', $('#txtCurrency').val());
+            invoiceDto.append('rate', $('#txtRate').val());
+            var ammount = parseFloat($('#txtInvoiceAmmount').val().replace(',', ''));
+            
+
+            if ($('#txtCurrency').val() == 'USD') {
+                invoiceAmmountIdr = ammount * parseInt($('#txtRate').val().replace(',', ''));
+                invoiceDto.append('invoiceAmmountIDR', formatCurrency(parseFloat(invoiceAmmountIdr).toFixed(2)));
+                invoiceDto.append('openAmmountIDR', formatCurrency(parseFloat(invoiceAmmountIdr).toFixed(2)));
+                invoiceDto.append('invoiceAmmountForeign', ammount);
+                invoiceDto.append('openAmmountForeign', ammount);
+                invoiceDto.append('remark', $('#txtRemark').val());
+                invoiceDto.append('isActive', 1);
+                //alert(formatCurrency(parseFloat(invoiceAmmountIdr).toFixed(2))); //
+            }
+            else
+            {
+                invoiceDto.append('invoiceAmmountIDR', $('#txtInvoiceAmmount').val());
+                invoiceDto.append('openAmmountIDR', $('#txtInvoiceAmmount').val());
+                invoiceDto.append('invoiceAmmountForeign', '0.00');
+                invoiceDto.append('openAmmountForeign', '0.00');
+                invoiceDto.append('remark', $('#txtRemark').val());
+                invoiceDto.append('isActive', 1);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/home/submitinvoice",
+                data: invoiceDto,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    App.unblockUI();
+                    if (result == true) {
+                        swal({
+                            title: "Berhasil Disimpan",
+                            text: "Data Berhasil disimpan",
+                            type: "success"
+                        }, function () {
+                            initData('', '');
+                            $('#modal-invoice').modal('hide');
+                        });
+                    }
+                    else {
+                        swal({
+                            title: "Gagal Disimpan",
+                            text: "Data Gagal disimpan",
+                            type: "error"
+                        }, function () {
+                            initData('', '');
+                        });
+                    }
+                },
+                error: function (e) {
+                    swal("Error!", "", "error");
+                }
+            });
+
+        }
+        
+        /* BTN MODAL INVOICE */
+        $(document).on('click', '#btn-submit-invoice', function (e) {
+            SubmitInvoice();
+        });
+
+        $(".number-only").keydown(function (e) {
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+                // Allow: Ctrl+A, Command+A
+                (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                // Allow: home, end, left, right, down, up
+                (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        $(".number-only").keyup(function (e) {
+            var val = this.value;
+            val = val.replace(/[^0-9\.]/g, '');
+
+            if (val != "") {
+                valArr = val.split('.');
+                valArr[0] = (parseInt(valArr[0], 10)).toLocaleString();
+                val = valArr.join('.');
+            }
+
+            this.value = val;
+        });
+
+        function formatCurrency(value) {
+            var val = value;
+            val = value.replace(/[^0-9\.]/g, '');
+
+            if (val != "") {
+                valArr = val.split('.');
+                valArr[0] = (parseInt(valArr[0], 10)).toLocaleString();
+                val = valArr.join('.');
+            }
+
+            return val;
+        }
+
+    });
 </script>

@@ -80,5 +80,23 @@ namespace BERCA_TEST.Controllers
             return jsonResult;
 
         }
+
+        /* SUBMIT INVOICE */
+        [HttpPost]
+        public async Task<bool> SubmitInvoice(InvoiceDTO invoiceDTO)
+        {
+            try
+            {
+                await _transactionService.SubmitInvoice(invoiceDTO);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+
+            return true;
+
+        }
     }
 }

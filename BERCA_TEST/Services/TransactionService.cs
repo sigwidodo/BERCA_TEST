@@ -41,5 +41,10 @@ namespace BERCA_TEST.Services
         {
             return await _transactionRepository.GetInvoiceInfo(id);
         }
+
+        public async Task<bool> SubmitInvoice(InvoiceDTO invoiceDTO)
+        {
+            return await _transactionRepository.SubmitInvoice(invoiceDTO);
+        }
     }
 }
