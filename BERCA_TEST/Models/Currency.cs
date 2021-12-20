@@ -9,6 +9,6 @@ namespace BERCA_TEST.Models
     {
         public string Currency1 { get; set; }
         public string EffectiveDate { get; set; }
-        public string Rate { get; set; }
+        public decimal? Rate { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace BERCA_TEST.DbContexts
         {
             if (!optionsBuilder.IsConfigured)
             {
+
             }
         }
 
@@ -43,13 +44,10 @@ namespace BERCA_TEST.DbContexts
                     .IsUnicode(false)
                     .HasColumnName("CollectionID");
 
-                entity.Property(e => e.CollectionAmmountForeign)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CollectionAmmountForeign).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.CollectionAmmountIdr)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("CollectionAmmountIDR");
 
                 entity.Property(e => e.CollectionDate)
@@ -64,24 +62,22 @@ namespace BERCA_TEST.DbContexts
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Rate)
-                    .HasMaxLength(25)
-                    .IsUnicode(false);
+                entity.Property(e => e.Rate).HasColumnType("decimal(10, 2)");
 
                 entity.HasOne(d => d.InvoiceNoNavigation)
                     .WithMany(p => p.Collections)
                     .HasForeignKey(d => d.InvoiceNo)
-                    .HasConstraintName("FK__Collectio__Invoi__3B75D760");
+                    .HasConstraintName("FK__Collectio__Invoi__02FC7413");
             });
 
             modelBuilder.Entity<Currency>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.Currency1, e.EffectiveDate })
+                    .HasName("PK__Currency__AFC4E285F507D7FB");
 
                 entity.ToTable("Currency");
 
                 entity.Property(e => e.Currency1)
-                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("Currency");
@@ -90,9 +86,7 @@ namespace BERCA_TEST.DbContexts
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Rate)
-                    .HasMaxLength(25)
-                    .IsUnicode(false);
+                entity.Property(e => e.Rate).HasColumnType("decimal(10, 2)");
             });
 
             modelBuilder.Entity<Customer>(entity =>
@@ -113,7 +107,7 @@ namespace BERCA_TEST.DbContexts
             modelBuilder.Entity<Invoice>(entity =>
             {
                 entity.HasKey(e => e.InvoiceNo)
-                    .HasName("PK__Invoice__D796B2260EC9C74A");
+                    .HasName("PK__Invoice__D796B2265EB16E4A");
 
                 entity.ToTable("Invoice");
 
@@ -131,38 +125,25 @@ namespace BERCA_TEST.DbContexts
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InvoiceAmmountForeign)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.InvoiceAmmountForeign).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.InvoiceAmmountIdr)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("InvoiceAmmountIDR");
 
                 entity.Property(e => e.InvoiceDate)
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.OpenAmmountForeign)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.OpenAmmountForeign).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.OpenAmmountIdr)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("OpenAmmountIDR");
 
-                entity.Property(e => e.Rate)
-                    .HasMaxLength(25)
-                    .IsUnicode(false);
+                entity.Property(e => e.Rate).HasColumnType("decimal(10, 2)");
 
                 entity.Property(e => e.Remark).IsUnicode(false);
-
-                entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.Invoices)
-                    .HasForeignKey(d => d.CustomerId)
-                    .HasConstraintName("FK__Invoice__Custome__38996AB5");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -62,11 +62,30 @@ namespace BERCA_TEST.Controllers
 
         }
 
+        /* GET LIST COLLECTION */
+        public async Task<JsonResult> GetListCollection(string id)
+        {
+            List<CollectionDTO> listCollection = (List<CollectionDTO>)await _transactionService.GetListCollection(id);
+            var jsonResult = Json(listCollection);
+            return jsonResult;
+
+        }
+
         /* SET INVOICE INFO */
         public async Task<JsonResult> SetInvoiceInfo(string id)
         {
 
             InvoiceDTO invoice = (InvoiceDTO)await _transactionService.GetInvoiceInfo(id);
+            var jsonResult = Json(invoice);
+            return jsonResult;
+
+        }
+
+        /* GET DETAIL INVOICE INFO */
+        public async Task<JsonResult> GetDetailInvoice(string id)
+        {
+
+            InvoiceDTO invoice = (InvoiceDTO)await _transactionService.GetDetailInvoice(id);
             var jsonResult = Json(invoice);
             return jsonResult;
 
@@ -98,5 +117,39 @@ namespace BERCA_TEST.Controllers
             return true;
 
         }
+
+        /* DELETE COLLECTION */
+        public async Task<bool> DeleteCollection(int? id)
+        {
+            try
+            {
+                await _transactionService.DeleteCollection(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public async Task<bool> SetInActiveInvoice(string id)
+        {
+            try
+            {
+                await _transactionService.SetInActiveInvoice(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+
+            return true;
+
+        }
+
     }
 }

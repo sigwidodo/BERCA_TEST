@@ -17,6 +17,11 @@ namespace BERCA_TEST.Services
             _transactionRepository = transactionRepository;
         }
 
+        public async Task<bool> DeleteCollection(int? id)
+        {
+            return await _transactionRepository.DeleteCollection(id);
+        }
+
         public async Task<IEnumerable<string>> GetAllCurrency()
         {
             return await _transactionRepository.GetAllCurrency();
@@ -37,9 +42,24 @@ namespace BERCA_TEST.Services
             return await _transactionRepository.GetCurrencyRate(id);
         }
 
+        public async Task<InvoiceDTO> GetDetailInvoice(string id)
+        {
+            return await _transactionRepository.GetDetailInvoice(id);
+        }
+
         public async Task<InvoiceDTO> GetInvoiceInfo(string id)
         {
             return await _transactionRepository.GetInvoiceInfo(id);
+        }
+
+        public async Task<IEnumerable<CollectionDTO>> GetListCollection(string id)
+        {
+            return await _transactionRepository.GetListCollection(id);
+        }
+
+        public async Task<bool> SetInActiveInvoice(string id)
+        {
+            return await _transactionRepository.SetInActiveInvoice(id);
         }
 
         public async Task<bool> SubmitInvoice(InvoiceDTO invoiceDTO)
